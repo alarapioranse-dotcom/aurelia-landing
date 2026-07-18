@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aurelia — إشراقة تستحقينها</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Cairo:wght@300;400;600;700&family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --black:#0B0A09; --ink:#111009; --card:#161310; --card2:#1D1915;
+  --gold:#D4AF37; --gold-soft:#E8CE7E; --rose:#C4998F;
+  --cream:#F3EDDE; --muted:#A79F8E;
+  --line:rgba(212,175,55,.22); --line-soft:rgba(243,237,222,.10);
+  --r:22px;
+  --s1:.5rem; --s2:1rem; --s3:1.5rem; --s4:2.5rem; --s5:4.5rem;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--black);color:var(--cream);font-family:'Cairo',sans-serif;font-size:16px;line-height:1.75;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+img,svg{display:block;max-width:100%}
+a{color:inherit;text-decoration:none}
+.serif{font-family:'Cormorant Garamond','Amiri',serif}
+.wordmark{font-family:'Cormorant Garamond',serif;font-weight:500;letter-spacing:.42em;text-transform:uppercase}
+h1,h2,h3{font-family:'Amiri',serif;font-weight:700;line-height:1.3}
+html[dir="ltr"] h1,html[dir="ltr"] h2,html[dir="ltr"] h3{font-family:'Cormorant Garamond',serif;font-weight:600}
+.container{width:min(100% - 2rem,1120px);margin-inline:auto}
+
+/* ===== Pills & buttons ===== */
+.pill{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;min-height:48px;padding:.65rem 1.6rem;border-radius:999px;font-weight:600;font-size:.95rem;cursor:pointer;border:1px solid transparent;transition:.25s;font-family:inherit}
+.pill:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+.pill-light{background:var(--cream);color:#141005}
+.pill-light:hover{background:#fff;box-shadow:0 0 30px rgba(243,237,222,.25)}
+.pill-gold{background:var(--gold);color:#141005}
+.pill-gold:hover{background:var(--gold-soft)}
+.pill-ghost{border-color:var(--line);color:var(--cream);background:rgba(22,19,16,.5);backdrop-filter:blur(8px)}
+.pill-ghost:hover{border-color:var(--gold);color:var(--gold)}
+.pill-sm{min-height:44px;padding:.4rem 1.1rem;font-size:.85rem}
+
+/* ===== Nav ===== */
+nav{position:sticky;top:0;z-index:80;padding:.8rem 0;background:linear-gradient(to bottom,rgba(11,10,9,.92),rgba(11,10,9,.72));backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+.nav-inner{display:flex;align-items:center;justify-content:space-between;gap:.6rem}
+.brand-pill{background:var(--cream);color:#141005;border-radius:999px;padding:.5rem 1.3rem;font-size:1rem}
+.nav-actions{display:flex;align-items:center;gap:.45rem}
+
+/* Language */
+.lang-wrap{position:relative}
+.lang-btn{min-height:44px;display:inline-flex;align-items:center;gap:.4rem;padding:.4rem 1rem;border:1px solid var(--line-soft);color:var(--muted);background:rgba(22,19,16,.6);border-radius:999px;font-weight:600;font-size:.82rem;cursor:pointer}
+.lang-btn svg{width:15px;height:15px;stroke:currentColor}
+.lang-btn:hover{color:var(--gold);border-color:var(--line)}
+.lang-menu{position:absolute;top:calc(100% + 8px);inset-inline-end:0;background:var(--card);border:1px solid var(--line);border-radius:16px;min-width:230px;padding:.5rem;display:none;z-index:90;box-shadow:0 20px 50px rgba(0,0,0,.5)}
+.lang-menu.open{display:block}
+.lang-menu button{display:block;width:100%;text-align:start;background:none;border:none;color:var(--cream);padding:.6rem .9rem;font-family:inherit;font-size:.9rem;cursor:pointer;min-height:44px;border-radius:10px}
+.lang-menu button:hover{background:rgba(212,175,55,.1);color:var(--gold)}
+.lang-menu .sep{border-top:1px solid var(--line-soft);margin:.4rem 0}
+.lang-custom{display:flex;gap:.4rem;padding:.3rem .4rem}
+.lang-custom input{flex:1;background:var(--black);border:1px solid var(--line-soft);color:var(--cream);padding:.5rem .8rem;font-family:inherit;font-size:.85rem;min-height:44px;border-radius:999px}
+.lang-custom input:focus{outline:1px solid var(--gold)}
+.translating{position:fixed;inset:0;background:rgba(11,10,9,.88);z-index:200;display:none;align-items:center;justify-content:center;flex-direction:column;gap:1rem;text-align:center;padding:2rem}
+.translating.show{display:flex}
+.spinner{width:44px;height:44px;border:2px solid var(--line);border-top-color:var(--gold);border-radius:50%;animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ===== Bento hero ===== */
+.hero{padding:var(--s3) 0 var(--s4)}
+.bento{display:grid;gap:.8rem;grid-template-columns:repeat(2,1fr);grid-auto-rows:150px}
+@media(min-width:768px){.bento{grid-template-columns:repeat(4,1fr);grid-auto-rows:170px}}
+.cell{position:relative;border-radius:var(--r);overflow:hidden;background:var(--card);border:1px solid var(--line-soft)}
+.cell.tall{grid-row:span 2}
+.cell.wide{grid-column:span 2}
+.cell.big{grid-column:span 2;grid-row:span 2}
+.cell .label{position:absolute;bottom:.9rem;inset-inline-start:1rem;font-size:.72rem;letter-spacing:.22em;text-transform:uppercase;color:var(--muted);z-index:3}
+
+/* product stages */
+.stage{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
+.stage::before{content:"";position:absolute;inset:0;background:
+  radial-gradient(ellipse 70% 55% at 50% 60%,rgba(212,175,55,.16),transparent 70%),
+  linear-gradient(160deg,#1D1915,#0E0C0A)}
+/* floating gold halo ring — the signature */
+.halo{position:relative;width:min(62%,190px);aspect-ratio:1;border-radius:50%;
+  background:conic-gradient(from 210deg,#5c4712,#D4AF37 25%,#F6E3A1 40%,#D4AF37 55%,#3d2f0c 80%,#5c4712);
+  -webkit-mask:radial-gradient(circle,transparent 58%,#000 60%);mask:radial-gradient(circle,transparent 58%,#000 60%);
+  animation:floaty 6s ease-in-out infinite, slowspin 26s linear infinite;
+  filter:drop-shadow(0 18px 30px rgba(0,0,0,.55)) drop-shadow(0 0 26px rgba(212,175,55,.28))}
+.halo.small{width:min(52%,120px);animation-duration:5s,20s}
+.halo.tilt{transform:rotateX(58deg);animation:floaty 7s ease-in-out infinite}
+@keyframes floaty{0%,100%{translate:0 0}50%{translate:0 -14px}}
+@keyframes slowspin{to{rotate:360deg}}
+/* mask silhouette */
+.maskviz{position:relative;width:min(66%,180px);animation:floaty 6.5s ease-in-out infinite}
+.maskviz svg{width:100%;height:auto}
+/* ripple */
+.ripple{position:absolute;inset:0;display:grid;place-items:center}
+.ripple i{position:absolute;width:34%;aspect-ratio:1;border-radius:50%;border:1px solid rgba(212,175,55,.5);animation:rip 3.6s ease-out infinite}
+.ripple i:nth-child(2){animation-delay:1.2s}
+.ripple i:nth-child(3){animation-delay:2.4s}
+@keyframes rip{0%{transform:scale(.5);opacity:.9}100%{transform:scale(2.1);opacity:0}}
+/* shimmer sweep on cards */
+.sheen::after{content:"";position:absolute;inset:0;background:linear-gradient(115deg,transparent 30%,rgba(243,237,222,.08) 46%,transparent 62%);transform:translateX(-120%);animation:sheen 6s ease-in-out infinite;z-index:2}
+html[dir="rtl"] .sheen::after{animation-name:sheenRtl}
+@keyframes sheen{0%,55%{transform:translateX(-120%)}85%,100%{transform:translateX(120%)}}
+@keyframes sheenRtl{0%,55%{transform:translateX(120%)}85%,100%{transform:translateX(-120%)}}
+/* text cells */
+.cell.text{background:var(--cream);color:#1b1608;display:flex;flex-direction:column;justify-content:center;padding:1.2rem 1.3rem}
+.cell.text p{font-family:'Amiri',serif;font-size:clamp(1.05rem,3.6vw,1.35rem);line-height:1.5;font-weight:700}
+html[dir="ltr"] .cell.text p{font-family:'Cormorant Garamond',serif;font-weight:600;font-style:italic}
+.cell.text .wordmark{color:#1b1608;font-size:.78rem;margin-top:.8rem;opacity:.8}
+.cell.offer{background:linear-gradient(150deg,#211a0d,#141005);display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:.4rem;padding:1.2rem 1.3rem;border:1px solid var(--line)}
+.cell.offer .code{font-family:'Cormorant Garamond',serif;letter-spacing:.28em;color:var(--gold);font-size:1.25rem;font-weight:600}
+.cell.offer small{color:var(--muted);font-size:.8rem;line-height:1.5}
+
+/* ===== Statement (MIRA-style) ===== */
+.statement{display:flex;flex-wrap:wrap;align-items:center;gap:1.2rem;padding:var(--s4) 0;border-bottom:1px solid var(--line-soft)}
+.statement .wordmark{font-size:clamp(1.6rem,6vw,2.6rem);color:var(--cream)}
+.statement p{flex:1;min-width:240px;color:var(--muted);font-size:.98rem;max-width:34rem}
+.statement .pill{flex:none}
+
+/* ===== Sections ===== */
+section{padding:var(--s5) 0}
+.eyebrow{color:var(--rose);letter-spacing:.3em;font-size:.72rem;font-weight:600;text-transform:uppercase;margin-bottom:var(--s2);text-align:center}
+.section-head{text-align:center;margin-bottom:var(--s4)}
+.section-head h2{font-size:clamp(1.7rem,5vw,2.5rem)}
+.section-head h2 em{font-style:italic;color:var(--gold);font-family:'Cormorant Garamond',serif}
+
+/* features — editorial rows */
+.rows{border-top:1px solid var(--line-soft)}
+.row{display:flex;gap:1rem;align-items:baseline;justify-content:space-between;padding:1.4rem .2rem;border-bottom:1px solid var(--line-soft);transition:background .25s,padding .25s}
+.row:hover{background:rgba(212,175,55,.04);padding-inline:.8rem}
+.row .num{font-family:'Cormorant Garamond',serif;color:var(--gold);font-size:1rem;letter-spacing:.15em;flex:none}
+.row h3{font-size:1.15rem;flex:1}
+.row p{color:var(--muted);font-size:.9rem;flex:1.6;display:none}
+@media(min-width:768px){.row p{display:block}}
+.row-p-mobile{color:var(--muted);font-size:.88rem;margin:-1rem .2rem 1rem;display:block}
+@media(min-width:768px){.row-p-mobile{display:none}}
+
+/* ritual */
+.ritual{background:var(--card);border-block:1px solid var(--line-soft);border-radius:var(--r);padding:var(--s4) var(--s3);margin-block:var(--s2)}
+.steps{display:grid;gap:var(--s3);counter-reset:step}
+@media(min-width:768px){.steps{grid-template-columns:repeat(3,1fr)}}
+.step{position:relative;padding-top:.4rem}
+.step::before{counter-increment:step;content:"0" counter(step);font-family:'Cormorant Garamond',serif;font-size:2.6rem;color:transparent;-webkit-text-stroke:1px var(--gold);display:block;line-height:1;margin-bottom:.6rem;opacity:.85}
+.step h3{font-size:1.08rem;margin-bottom:.3rem}
+.step p{color:var(--muted);font-size:.92rem}
+
+/* quotes */
+.quotes{display:grid;gap:.8rem}
+@media(min-width:768px){.quotes{grid-template-columns:repeat(3,1fr)}}
+.quote{border:1px solid var(--line-soft);border-radius:var(--r);padding:1.5rem;background:var(--card);position:relative}
+.quote p{font-family:'Amiri',serif;font-size:1rem;margin-bottom:1rem}
+html[dir="ltr"] .quote p{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.05rem}
+.quote footer{color:var(--gold);font-size:.82rem;letter-spacing:.08em}
+.stars{color:var(--rose);letter-spacing:.22em;font-size:.75rem;margin-bottom:.7rem}
+
+/* final */
+.final{text-align:center;position:relative;overflow:hidden;border-radius:var(--r);background:var(--card);border:1px solid var(--line);padding:var(--s5) var(--s3);margin-bottom:var(--s4)}
+.final::before{content:"";position:absolute;inset:0;background:radial-gradient(ellipse 70% 80% at 50% 110%,rgba(212,175,55,.16),transparent 70%);pointer-events:none}
+.final h2{font-size:clamp(1.7rem,5.5vw,2.6rem);margin-bottom:var(--s2)}
+.code-chip{display:inline-block;border:1px dashed var(--gold);color:var(--gold);padding:.4rem 1.3rem;letter-spacing:.28em;font-weight:700;margin-bottom:var(--s3);border-radius:999px}
+.final p{color:var(--muted);margin-bottom:var(--s3)}
+
+footer.site{padding:0 0 7rem;text-align:center}
+footer.site .wordmark{font-size:1rem;color:var(--gold);margin-bottom:.8rem;display:block}
+footer.site p{color:var(--muted);font-size:.85rem}
+footer.site a{color:var(--rose)}
+
+/* ===== Chat ===== */
+.chat-fab{position:fixed;bottom:1.2rem;inset-inline-end:1.2rem;z-index:120;width:60px;height:60px;border-radius:50%;background:var(--gold);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 28px rgba(212,175,55,.45);transition:transform .2s}
+.chat-fab:hover{transform:scale(1.06)}
+.chat-fab svg{width:27px;height:27px;stroke:#141005}
+.chat-panel{position:fixed;bottom:0;inset-inline:0;z-index:130;background:var(--card);border:1px solid var(--line);border-radius:var(--r) var(--r) 0 0;height:78vh;max-height:640px;display:none;flex-direction:column}
+.chat-panel.open{display:flex}
+@media(min-width:600px){.chat-panel{inset-inline-end:1.2rem;inset-inline-start:auto;bottom:1.2rem;width:380px;border-radius:var(--r)}}
+.chat-head{display:flex;align-items:center;justify-content:space-between;padding:.9rem 1.1rem;border-bottom:1px solid var(--line-soft)}
+.chat-head .t{display:flex;align-items:center;gap:.6rem}
+.chat-head .dot{width:9px;height:9px;border-radius:50%;background:#7bc47f}
+.chat-head strong{font-size:.95rem;color:var(--gold)}
+.chat-head small{display:block;color:var(--muted);font-size:.72rem}
+.chat-close{background:none;border:none;color:var(--muted);cursor:pointer;min-width:44px;min-height:44px;font-size:1.3rem}
+.chat-body{flex:1;overflow-y:auto;padding:1rem;display:flex;flex-direction:column;gap:.7rem}
+.msg{max-width:85%;padding:.65rem 1rem;font-size:.92rem;line-height:1.6;white-space:pre-wrap;border-radius:16px}
+.msg.bot{background:var(--black);border:1px solid var(--line-soft);align-self:flex-start;border-start-start-radius:4px}
+.msg.user{background:rgba(196,153,143,.16);border:1px solid rgba(196,153,143,.3);align-self:flex-end;border-start-end-radius:4px}
+.msg.typing{color:var(--muted);font-style:italic}
+.chat-input{display:flex;gap:.5rem;padding:.8rem;border-top:1px solid var(--line-soft)}
+.chat-input input{flex:1;background:var(--black);border:1px solid var(--line-soft);color:var(--cream);padding:.7rem 1rem;font-family:inherit;font-size:.95rem;min-height:48px;border-radius:999px}
+.chat-input input:focus{outline:1px solid var(--gold)}
+.chat-send{min-width:48px;min-height:48px;border-radius:50%;background:var(--gold);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.chat-send svg{width:19px;height:19px;stroke:#141005}
+.chat-send:disabled{opacity:.5;cursor:default}
+
+/* reveal */
+.reveal{opacity:0;transform:translateY(20px);transition:opacity .7s ease,transform .7s ease}
+.reveal.show{opacity:1;transform:none}
+@media(prefers-reduced-motion:reduce){
+  .reveal{opacity:1;transform:none;transition:none}
+  .halo,.maskviz,.ripple i,.sheen::after{animation:none !important}
+  html{scroll-behavior:auto}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="container nav-inner">
+    <a href="#top" class="wordmark brand-pill">Aurelia</a>
+    <div class="nav-actions">
+      <div class="lang-wrap">
+        <button class="lang-btn" id="langBtn" aria-haspopup="true" aria-expanded="false">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18" stroke-linecap="round"/></svg>
+          <span id="langLabel">العربية</span>
+        </button>
+        <div class="lang-menu" id="langMenu" role="menu">
+          <button data-lang="ar">العربية</button>
+          <button data-lang="en">English</button>
+          <div class="sep"></div>
+          <button data-ai="Français">Français ✦ AI</button>
+          <button data-ai="Deutsch">Deutsch ✦ AI</button>
+          <button data-ai="Ελληνικά">Ελληνικά ✦ AI</button>
+          <button data-ai="Türkçe">Türkçe ✦ AI</button>
+          <div class="lang-custom">
+            <input id="customLang" data-i18n-ph="anyLang" placeholder="أي لغة أخرى...">
+            <button class="pill pill-gold pill-sm" id="customLangGo">✦</button>
+          </div>
+        </div>
+      </div>
+      <a class="pill pill-light pill-sm" href="https://bys-store-3284974-447163.myshopify.com" data-i18n="shopNow">تسوّقي</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero" id="top">
+  <div class="container">
+    <div class="bento">
+      <!-- tall: LED mask silhouette -->
+      <div class="cell tall sheen reveal">
+        <div class="stage">
+          <div class="maskviz" aria-hidden="true">
+            <svg viewBox="0 0 200 240" fill="none">
+              <defs>
+                <linearGradient id="g1" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0" stop-color="#F6E3A1"/><stop offset=".5" stop-color="#D4AF37"/><stop offset="1" stop-color="#8a6a17"/>
+                </linearGradient>
+              </defs>
+              <path d="M100 14c46 0 74 30 74 78 0 62-32 118-74 134C58 210 26 154 26 92c0-48 28-78 74-78z" stroke="url(#g1)" stroke-width="2.5"/>
+              <path d="M56 96c10-8 26-8 34 0M110 96c10-8 26-8 34 0" stroke="url(#g1)" stroke-width="2.5" stroke-linecap="round"/>
+              <path d="M78 150c14 10 30 10 44 0" stroke="url(#g1)" stroke-width="2.5" stroke-linecap="round"/>
+              <g stroke="#D4AF37" stroke-width="1.4" opacity=".8">
+                <circle cx="100" cy="64" r="2.6"/><circle cx="70" cy="72" r="2.2"/><circle cx="130" cy="72" r="2.2"/>
+                <circle cx="52" cy="126" r="2.2"/><circle cx="148" cy="126" r="2.2"/><circle cx="100" cy="188" r="2.4"/>
+                <circle cx="72" cy="176" r="2"/><circle cx="128" cy="176" r="2"/>
+              </g>
+            </svg>
+          </div>
+        </div>
+        <span class="label" data-i18n="cellLed">قناع LED</span>
+      </div>
+
+      <!-- big: signature floating halo -->
+      <div class="cell big reveal">
+        <div class="stage"><div class="halo" aria-hidden="true"></div></div>
+        <span class="label" data-i18n="cellSignature">مجموعة أوريليا</span>
+      </div>
+
+      <!-- ripple cell -->
+      <div class="cell reveal">
+        <div class="stage">
+          <div class="ripple" aria-hidden="true"><i></i><i></i><i></i></div>
+          <div class="halo small" aria-hidden="true"></div>
+        </div>
+      </div>
+
+      <!-- text card (like MIRA "We design every piece...") -->
+      <div class="cell text reveal">
+        <p data-i18n="cellQuote">ننتقي كل قطعة بحبّ وقصد.</p>
+        <span class="wordmark">Aurelia</span>
+      </div>
+
+      <!-- tilted halo -->
+      <div class="cell reveal">
+        <div class="stage"><div class="halo small tilt" aria-hidden="true"></div></div>
+        <span class="label" data-i18n="cellRitual">طقس المساء</span>
+      </div>
+
+      <!-- offer -->
+      <div class="cell offer wide reveal">
+        <span class="code">WELCOME15</span>
+        <small data-i18n="cellOffer">خصم 15% على طلبكِ الأول · شحن مجاني عالمياً</small>
+      </div>
+    </div>
+
+    <!-- statement -->
+    <div class="statement reveal">
+      <span class="wordmark">Aurelia</span>
+      <p data-i18n="statement">Aurelia تقدّم لكِ أدوات عناية مصمّمة بعناية، تمزج الجمال الحديث بالتفاصيل ذات المعنى — لتشرق معكِ كل يوم.</p>
+      <a class="pill pill-light" href="https://bys-store-3284974-447163.myshopify.com" data-i18n="explore">اكتشفي المزيد ←</a>
+    </div>
+  </div>
+</header>
+
+<section id="why" style="padding-top:var(--s4)">
+  <div class="container">
+    <p class="eyebrow" data-i18n="whyEyebrow">لماذا أوريليا</p>
+    <div class="section-head reveal"><h2 data-i18n="whyTitle">فخامة تليق <em>بروتينكِ</em></h2></div>
+    <div class="rows reveal">
+      <div class="row"><span class="num">01</span><h3 data-i18n="f1t">تقنية الضوء LED</h3><p data-i18n="f1p">جلسة عناية بمستوى العيادات، من أريكتكِ وخلال دقائق.</p></div>
+      <p class="row-p-mobile" data-i18n="f1pm">جلسة عناية بمستوى العيادات، من أريكتكِ وخلال دقائق.</p>
+      <div class="row"><span class="num">02</span><h3 data-i18n="f2t">فخامة بلا مبالغة</h3><p data-i18n="f2p">تصميم أنيق وتجربة بسيطة — أدوات تليق بروتينكِ، لا تعقّده.</p></div>
+      <p class="row-p-mobile" data-i18n="f2pm">تصميم أنيق وتجربة بسيطة — أدوات تليق بروتينكِ، لا تعقّده.</p>
+      <div class="row"><span class="num">03</span><h3 data-i18n="f3t">دقائق تكفي</h3><p data-i18n="f3p">روتين مسائي قصير بنتيجة تلاحظينها — لأن وقتكِ ثمين مثلكِ.</p></div>
+      <p class="row-p-mobile" data-i18n="f3pm">روتين مسائي قصير بنتيجة تلاحظينها — لأن وقتكِ ثمين مثلكِ.</p>
+      <div class="row"><span class="num">04</span><h3 data-i18n="f4t">اختيار مدروس</h3><p data-i18n="f4p">كل منتج مرّ بمعايير صارمة — نضع في المجموعة ما نثق به فقط.</p></div>
+      <p class="row-p-mobile" data-i18n="f4pm">كل منتج مرّ بمعايير صارمة — نضع في المجموعة ما نثق به فقط.</p>
+    </div>
+  </div>
+</section>
+
+<section id="ritual" style="padding-top:0">
+  <div class="container">
+    <div class="ritual reveal">
+      <p class="eyebrow" data-i18n="ritualEyebrow">الطقس</p>
+      <div class="section-head"><h2 data-i18n="ritualTitle">ثلاث خطوات <em>كل مساء</em></h2></div>
+      <div class="steps">
+        <div class="step"><h3 data-i18n="s1t">نظّفي بشرتكِ</h3><p data-i18n="s1p">ابدئي ببشرة نظيفة وجافة لتستقبل العناية كاملة.</p></div>
+        <div class="step"><h3 data-i18n="s2t">عشر دقائق من الضوء</h3><p data-i18n="s2p">ضعي القناع واختاري الوضع المناسب، ثم استرخي.</p></div>
+        <div class="step"><h3 data-i18n="s3t">رطّبي واختمي</h3><p data-i18n="s3p">مرطبكِ المفضل يختم الطقس — واستيقظي على إشراقة تلاحظينها.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="reviews" style="padding-top:0">
+  <div class="container">
+    <p class="eyebrow" data-i18n="revEyebrow">آراء</p>
+    <div class="section-head reveal"><h2 data-i18n="revTitle">قالت <em>عميلاتنا</em></h2></div>
+    <div class="quotes">
+      <blockquote class="quote reveal"><div class="stars">★★★★★</div><p data-i18n="q1">صار وقتي المفضل في اليوم. عشر دقائق أحس فيها إني في سبا خاص.</p><footer data-i18n="q1a">— ريم، دبي</footer></blockquote>
+      <blockquote class="quote reveal"><div class="stars">★★★★★</div><p data-i18n="q2">التغليف والتجربة كلها فخمة، والشحن وصلني أسرع مما توقعت.</p><footer data-i18n="q2a">— سارة، الرياض</footer></blockquote>
+      <blockquote class="quote reveal"><div class="stars">★★★★★</div><p data-i18n="q3">بعد أسبوعين لاحظت الفرق في نعومة بشرتي. أنصح فيه كل صديقاتي.</p><footer data-i18n="q3a">— لينا، عمّان</footer></blockquote>
+    </div>
+  </div>
+</section>
+
+<section style="padding-top:0;padding-bottom:0">
+  <div class="container">
+    <div class="final reveal">
+      <h2 data-i18n="finalTitle">أنتِ تستحقين <em>هذه اللحظة</em></h2>
+      <div class="code-chip">WELCOME15</div>
+      <p data-i18n="finalP">خصم 15% على طلبكِ الأول · شحن مجاني عالمياً</p>
+      <a class="pill pill-gold" href="https://bys-store-3284974-447163.myshopify.com" data-i18n="finalCta">ابدئي روتينكِ الفاخر</a>
+    </div>
+  </div>
+</section>
+
+<footer class="site">
+  <div class="container">
+    <span class="wordmark">Aurelia</span>
+    <p data-i18n="tagline">عناية فاخرة، لأنكِ تستحقين.</p>
+    <p style="margin-top:.5rem"><span data-i18n="follow">تابعينا على تيك توك:</span> <a href="https://www.tiktok.com/@aurelia.beauty.co" rel="noopener">@aurelia.beauty.co</a></p>
+    <p style="margin-top:1rem;opacity:.55">© 2026 Aurelia</p>
+  </div>
+</footer>
+
+<div class="translating" id="translating">
+  <div class="spinner"></div>
+  <p style="color:var(--gold);font-weight:600" data-i18n="translating">✦ الذكاء الاصطناعي يترجم الصفحة...</p>
+</div>
+
+<button class="chat-fab" id="chatFab" aria-label="AI Assistant">
+  <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M21 12a8 8 0 0 1-8 8H5l-2 2V12a8 8 0 0 1 8-8h2a8 8 0 0 1 8 8z" stroke-linecap="round" stroke-linejoin="round"/><path d="M9 10h.5M14.5 10h.5" stroke-linecap="round"/></svg>
+</button>
+<div class="chat-panel" id="chatPanel" role="dialog" aria-label="Aurelia AI Assistant">
+  <div class="chat-head">
+    <div class="t"><span class="dot"></span>
+      <div><strong data-i18n="chatTitle">مساعدة Aurelia الذكية</strong><small data-i18n="chatSub">اسأليني بأي لغة ✦</small></div>
+    </div>
+    <button class="chat-close" id="chatClose" aria-label="Close">×</button>
+  </div>
+  <div class="chat-body" id="chatBody"></div>
+  <div class="chat-input">
+    <input id="chatText" data-i18n-ph="chatPh" placeholder="اكتبي سؤالكِ هنا...">
+    <button class="chat-send" id="chatSend" aria-label="Send">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+  </div>
+</div>
+
+<script>
+const I18N = {
+  ar: { _dir:"rtl", _label:"العربية",
+    shopNow:"تسوّقي",
+    cellLed:"قناع LED", cellSignature:"مجموعة أوريليا", cellRitual:"طقس المساء",
+    cellQuote:"ننتقي كل قطعة بحبّ وقصد.",
+    cellOffer:"خصم 15% على طلبكِ الأول · شحن مجاني عالمياً",
+    statement:"Aurelia تقدّم لكِ أدوات عناية مصمّمة بعناية، تمزج الجمال الحديث بالتفاصيل ذات المعنى — لتشرق معكِ كل يوم.",
+    explore:"اكتشفي المزيد ←",
+    whyEyebrow:"لماذا أوريليا", whyTitle:'فخامة تليق <em>بروتينكِ</em>',
+    f1t:"تقنية الضوء LED", f1p:"جلسة عناية بمستوى العيادات، من أريكتكِ وخلال دقائق.", f1pm:"جلسة عناية بمستوى العيادات، من أريكتكِ وخلال دقائق.",
+    f2t:"فخامة بلا مبالغة", f2p:"تصميم أنيق وتجربة بسيطة — أدوات تليق بروتينكِ، لا تعقّده.", f2pm:"تصميم أنيق وتجربة بسيطة — أدوات تليق بروتينكِ، لا تعقّده.",
+    f3t:"دقائق تكفي", f3p:"روتين مسائي قصير بنتيجة تلاحظينها — لأن وقتكِ ثمين مثلكِ.", f3pm:"روتين مسائي قصير بنتيجة تلاحظينها — لأن وقتكِ ثمين مثلكِ.",
+    f4t:"اختيار مدروس", f4p:"كل منتج مرّ بمعايير صارمة — نضع في المجموعة ما نثق به فقط.", f4pm:"كل منتج مرّ بمعايير صارمة — نضع في المجموعة ما نثق به فقط.",
+    ritualEyebrow:"الطقس", ritualTitle:'ثلاث خطوات <em>كل مساء</em>',
+    s1t:"نظّفي بشرتكِ", s1p:"ابدئي ببشرة نظيفة وجافة لتستقبل العناية كاملة.",
+    s2t:"عشر دقائق من الضوء", s2p:"ضعي القناع واختاري الوضع المناسب، ثم استرخي.",
+    s3t:"رطّبي واختمي", s3p:"مرطبكِ المفضل يختم الطقس — واستيقظي على إشراقة تلاحظينها.",
+    revEyebrow:"آراء", revTitle:'قالت <em>عميلاتنا</em>',
+    q1:"صار وقتي المفضل في اليوم. عشر دقائق أحس فيها إني في سبا خاص.", q1a:"— ريم، دبي",
+    q2:"التغليف والتجربة كلها فخمة، والشحن وصلني أسرع مما توقعت.", q2a:"— سارة، الرياض",
+    q3:"بعد أسبوعين لاحظت الفرق في نعومة بشرتي. أنصح فيه كل صديقاتي.", q3a:"— لينا، عمّان",
+    finalTitle:'أنتِ تستحقين <em>هذه اللحظة</em>', finalP:"خصم 15% على طلبكِ الأول · شحن مجاني عالمياً",
+    finalCta:"ابدئي روتينكِ الفاخر", tagline:"عناية فاخرة، لأنكِ تستحقين.", follow:"تابعينا على تيك توك:",
+    translating:"✦ الذكاء الاصطناعي يترجم الصفحة...", anyLang:"أي لغة أخرى...",
+    chatTitle:"مساعدة Aurelia الذكية", chatSub:"اسأليني بأي لغة ✦", chatPh:"اكتبي سؤالكِ هنا...",
+    chatHello:"أهلاً بكِ في Aurelia ✦ أنا مساعدتكِ الذكية — اسأليني عن المنتجات، الشحن، أو كود الخصم، بأي لغة تحبين."
+  },
+  en: { _dir:"ltr", _label:"English",
+    shopNow:"Shop",
+    cellLed:"LED Mask", cellSignature:"The Aurelia Collection", cellRitual:"Evening Ritual",
+    cellQuote:"We curate every piece with love and intention.",
+    cellOffer:"15% off your first order · Free worldwide shipping",
+    statement:"Aurelia brings you thoughtfully curated beauty tools that blend modern aesthetics with meaningful details — made to shine with you every day.",
+    explore:"Explore more →",
+    whyEyebrow:"Why Aurelia", whyTitle:'Luxury worthy of <em>your ritual</em>',
+    f1t:"LED Light Technology", f1p:"A clinic-grade session from your couch, in minutes.", f1pm:"A clinic-grade session from your couch, in minutes.",
+    f2t:"Effortless Luxury", f2p:"Elegant design, simple experience — tools that elevate your ritual.", f2pm:"Elegant design, simple experience — tools that elevate your ritual.",
+    f3t:"Minutes Are Enough", f3p:"A short evening ritual with results you'll notice.", f3pm:"A short evening ritual with results you'll notice.",
+    f4t:"Thoughtfully Selected", f4p:"Every product passes strict standards — only what we trust makes the cut.", f4pm:"Every product passes strict standards — only what we trust makes the cut.",
+    ritualEyebrow:"The Ritual", ritualTitle:'Three steps, <em>every evening</em>',
+    s1t:"Cleanse", s1p:"Start with clean, dry skin ready to receive the full care.",
+    s2t:"Ten Minutes of Light", s2p:"Put on the mask, choose your mode, and simply relax.",
+    s3t:"Moisturize & Seal", s3p:"Your favorite moisturizer seals the ritual — wake up glowing.",
+    revEyebrow:"Reviews", revTitle:'What our <em>customers say</em>',
+    q1:"It's become my favorite time of day. Ten minutes that feel like a private spa.", q1a:"— Reem, Dubai",
+    q2:"The packaging and whole experience feel premium, and shipping arrived early.", q2a:"— Sarah, Riyadh",
+    q3:"After two weeks I noticed the difference in my skin. I recommend it to everyone.", q3a:"— Lina, Amman",
+    finalTitle:'You deserve <em>this moment</em>', finalP:"15% off your first order · Free worldwide shipping",
+    finalCta:"Begin Your Luxury Ritual", tagline:"Luxury care, because you deserve it.", follow:"Follow us on TikTok:",
+    translating:"✦ AI is translating the page...", anyLang:"Any other language...",
+    chatTitle:"Aurelia AI Assistant", chatSub:"Ask me in any language ✦", chatPh:"Type your question...",
+    chatHello:"Welcome to Aurelia ✦ I'm your AI assistant — ask me about products, shipping, or your discount code, in any language."
+  }
+};
+let currentDict = I18N.ar;
+
+function applyDict(dict, dir){
+  document.querySelectorAll("[data-i18n]").forEach(el=>{ const k=el.dataset.i18n; if(dict[k]!==undefined) el.innerHTML=dict[k]; });
+  document.querySelectorAll("[data-i18n-ph]").forEach(el=>{ const k=el.dataset.i18nPh; if(dict[k]!==undefined) el.placeholder=dict[k]; });
+  document.documentElement.dir = dir;
+  document.documentElement.lang = dir==="rtl" ? "ar" : "en";
+  currentDict = dict;
+  document.getElementById("langLabel").textContent = dict._label || "✦";
+  const hello = document.querySelector("#chatBody .msg.bot");
+  if(hello && document.getElementById("chatBody").children.length===1) hello.innerHTML = dict.chatHello;
+}
+
+const langBtn=document.getElementById("langBtn"), langMenu=document.getElementById("langMenu");
+langBtn.addEventListener("click",()=>{ langMenu.classList.toggle("open"); langBtn.setAttribute("aria-expanded",langMenu.classList.contains("open")); });
+document.addEventListener("click",e=>{ if(!e.target.closest(".lang-wrap")) langMenu.classList.remove("open"); });
+langMenu.querySelectorAll("[data-lang]").forEach(b=>b.addEventListener("click",()=>{ applyDict(I18N[b.dataset.lang], I18N[b.dataset.lang]._dir); langMenu.classList.remove("open"); }));
+langMenu.querySelectorAll("[data-ai]").forEach(b=>b.addEventListener("click",()=>{ aiTranslate(b.dataset.ai); langMenu.classList.remove("open"); }));
+document.getElementById("customLangGo").addEventListener("click",()=>{ const v=document.getElementById("customLang").value.trim(); if(v){ aiTranslate(v); langMenu.classList.remove("open"); } });
+
+const CLAUDE_ENDPOINT = "/.netlify/functions/claude"; // if embedding on Shopify, use the full URL: "https://YOUR-SITE.netlify.app/.netlify/functions/claude"
+async function claudeCall(messages, maxTokens=1500){
+  const r = await fetch(CLAUDE_ENDPOINT,{ method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({max_tokens:maxTokens, messages}) });
+  const data = await r.json();
+  return (data.content||[]).filter(i=>i.type==="text").map(i=>i.text).join("\n");
+}
+
+const aiCache = {};
+async function aiTranslate(lang){
+  const key = lang.toLowerCase();
+  if(aiCache[key]){ applyDict(aiCache[key], aiCache[key]._dir); return; }
+  const ov=document.getElementById("translating"); ov.classList.add("show");
+  try{
+    const src={...I18N.en}; delete src._dir; delete src._label;
+    const prompt=`You are a professional localizer for "Aurelia", a luxury beauty e-commerce brand (elegant, warm, addressing women). Translate the JSON values below into ${lang}. Keep HTML tags (<b>, <em>, <br>) exactly as-is. Keep "WELCOME15" and "Aurelia" untranslated. Respond ONLY with valid JSON, same keys, no markdown fences, no preamble. Also add two extra keys: "_dir" = "rtl" if ${lang} is written right-to-left else "ltr", and "_label" = the native name of the language.\n\n${JSON.stringify(src)}`;
+    const raw=await claudeCall([{role:"user",content:prompt}],3000);
+    const dict=JSON.parse(raw.replace(/```json|```/g,"").trim());
+    aiCache[key]=dict;
+    applyDict(dict, dict._dir==="rtl"?"rtl":"ltr");
+  }catch(err){
+    console.error(err);
+    alert(currentDict._dir==="rtl"?"تعذرت الترجمة، حاول مرة أخرى":"Translation failed, please try again");
+  }finally{ ov.classList.remove("show"); }
+}
+
+const SYSTEM_CTX=`You are the friendly AI customer assistant for "Aurelia" (aurelia.beauty.co on TikTok), a luxury beauty & personal care online store with a black-and-gold aesthetic.
+Facts: Free worldwide shipping. 15% off first order with code WELCOME15. Hero product: LED face mask (clinic-grade light therapy at home); also premium self-care tools like scalp massagers. Secure checkout via Shopify Payments. Store reachable via the shop buttons on this page / link in bio.
+Rules: ALWAYS reply in the customer's language. Tone: warm, elegant, helpful; in Arabic use feminine "أنتِ". Never make medical claims. For order status/refunds, kindly direct them to TikTok DM. Keep answers 2-4 sentences.`;
+
+const chatFab=document.getElementById("chatFab"), chatPanel=document.getElementById("chatPanel"),
+      chatBody=document.getElementById("chatBody"), chatText=document.getElementById("chatText"),
+      chatSend=document.getElementById("chatSend");
+const history=[];
+function addMsg(text,who){ const m=document.createElement("div"); m.className="msg "+who; m.innerHTML=text; chatBody.appendChild(m); chatBody.scrollTop=chatBody.scrollHeight; return m; }
+chatFab.addEventListener("click",()=>{ chatPanel.classList.add("open"); chatFab.style.display="none"; if(!chatBody.children.length) addMsg(currentDict.chatHello,"bot"); chatText.focus(); });
+document.getElementById("chatClose").addEventListener("click",()=>{ chatPanel.classList.remove("open"); chatFab.style.display="flex"; });
+
+async function sendChat(){
+  const t=chatText.value.trim(); if(!t) return;
+  chatText.value=""; chatSend.disabled=true;
+  addMsg(t.replace(/</g,"&lt;"),"user");
+  history.push({role:"user",content:t});
+  const typing=addMsg(currentDict._dir==="rtl"?"تكتب...":"typing...","bot typing");
+  try{
+    const reply=await claudeCall([{role:"user",content:SYSTEM_CTX+"\n\nConversation so far:\n"+history.map(h=>`${h.role}: ${h.content}`).join("\n")+"\n\nReply to the customer's last message now."}],600);
+    typing.remove(); addMsg(reply.replace(/</g,"&lt;"),"bot");
+    history.push({role:"assistant",content:reply});
+    if(history.length>12) history.splice(0,history.length-12);
+  }catch(err){ typing.remove(); addMsg(currentDict._dir==="rtl"?"حدث خطأ، حاولي مرة أخرى ✦":"Something went wrong, please try again ✦","bot"); }
+  finally{ chatSend.disabled=false; chatText.focus(); }
+}
+chatSend.addEventListener("click",sendChat);
+chatText.addEventListener("keydown",e=>{ if(e.key==="Enter") sendChat(); });
+
+const io=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add("show");io.unobserve(e.target)}})},{threshold:.1});
+document.querySelectorAll(".reveal").forEach(el=>io.observe(el));
+</script>
+</body>
+</html>

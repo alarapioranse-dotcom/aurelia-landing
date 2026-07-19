@@ -1,15 +1,34 @@
-const ALLOWED_ORIGIN = "https://bys-store-3284974-447163.myshopify.com";
+const ALLOWED_ORIGINS = [
+  "https://bys-store-3284974-447163.myshopify.com",
+  "https://aurelia-beauty.netlify.app",
+];
+
+// حد أقصى لحجم الطلب لمنع إساءة الاستخدام (بالحروف)
+const MAX_BODY_CHARS = 8000;
 
 exports.handler = async (event) => {
   const origin = event.headers && (event.headers.origin || event.headers.Origin);
+  const isAllowed = ALLOWED_ORIGINS.includes(origin);
+
   const corsHeaders = {
-    "Access-Control-Allow-Origin": origin === ALLOWED_ORIGIN ? ALLOWED_ORIGIN : "*",
+    "Access-Control-Allow-Origin": isAllowed ? origin : ALLOWED_ORIGINS[0],
     "Access-Control-Allow-Methods": "POST, OPTIONS",
     "Access-Control-Allow-Headers": "Content-Type",
+    "Vary": "Origin",
   };
 
+  // طلب فحص CORS المسبق
   if (event.httpMethod === "OPTIONS") {
     return { statusCode: 204, headers: corsHeaders, body: "" };
+  }
+
+  // ارفض أي مصدر غير مسموح قبل استهلاك مفتاح الـ API
+  if (!isAllowed) {
+    return {
+      statusCode: 403,
+      headers: corsHeaders,
+      body: JSON.stringify({ error: "Forbidden" }),
+    };
   }
 
   if (event.httpMethod !== "POST") {
@@ -17,6 +36,15 @@ exports.handler = async (event) => {
       statusCode: 405,
       headers: corsHeaders,
       body: JSON.stringify({ error: "Method not allowed" }),
+    };
+  }
+
+  // ارفض الطلبات الضخمة
+  if (event.body && event.body.length > MAX_BODY_CHARS) {
+    return {
+      statusCode: 413,
+      headers: corsHeaders,
+      body: JSON.stringify({ error: "Payload too large" }),
     };
   }
 

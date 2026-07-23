@@ -68,14 +68,6 @@ nav{position:sticky;top:0;z-index:80;padding:.8rem 0;background:linear-gradient(
 .lang-menu.open{display:block}
 .lang-menu button{display:block;width:100%;text-align:start;background:none;border:none;color:var(--cream);padding:.6rem .9rem;font-family:inherit;font-size:.9rem;cursor:pointer;min-height:44px;border-radius:10px}
 .lang-menu button:hover{background:rgba(212,175,55,.1);color:var(--gold)}
-.lang-menu .sep{border-top:1px solid var(--line-soft);margin:.4rem 0}
-.lang-custom{display:flex;gap:.4rem;padding:.3rem .4rem}
-.lang-custom input{flex:1;background:var(--black);border:1px solid var(--line-soft);color:var(--cream);padding:.5rem .8rem;font-family:inherit;font-size:.85rem;min-height:44px;border-radius:999px}
-.lang-custom input:focus{outline:1px solid var(--gold)}
-.translating{position:fixed;inset:0;background:rgba(11,10,9,.88);z-index:200;display:none;align-items:center;justify-content:center;flex-direction:column;gap:1rem;text-align:center;padding:2rem}
-.translating.show{display:flex}
-.spinner{width:44px;height:44px;border:2px solid var(--line);border-top-color:var(--gold);border-radius:50%;animation:spin 1s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
 
 /* ===== Bento hero ===== */
 .hero{padding:var(--s3) 0 var(--s4)}
@@ -228,15 +220,6 @@ footer.site a{color:var(--rose)}
         <div class="lang-menu" id="langMenu" role="menu">
           <button data-lang="ar">العربية</button>
           <button data-lang="en">English</button>
-          <div class="sep"></div>
-          <button data-ai="Français">Français ✦ AI</button>
-          <button data-ai="Deutsch">Deutsch ✦ AI</button>
-          <button data-ai="Ελληνικά">Ελληνικά ✦ AI</button>
-          <button data-ai="Türkçe">Türkçe ✦ AI</button>
-          <div class="lang-custom">
-            <input id="customLang" data-i18n-ph="anyLang" placeholder="أي لغة أخرى...">
-            <button class="pill pill-gold pill-sm" id="customLangGo">✦</button>
-          </div>
         </div>
       </div>
       <a class="pill pill-light pill-sm" href="https://bys-store-3284974-447163.myshopify.com" target="_blank" rel="noopener" data-i18n="shopNow">تسوّقي</a>
@@ -376,11 +359,6 @@ footer.site a{color:var(--rose)}
   </div>
 </footer>
 
-<div class="translating" id="translating">
-  <div class="spinner"></div>
-  <p style="color:var(--gold);font-weight:600" data-i18n="translating">✦ الذكاء الاصطناعي يترجم الصفحة...</p>
-</div>
-
 <button class="chat-fab" id="chatFab" aria-label="AI Assistant">
   <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M21 12a8 8 0 0 1-8 8H5l-2 2V12a8 8 0 0 1 8-8h2a8 8 0 0 1 8 8z" stroke-linecap="round" stroke-linejoin="round"/><path d="M9 10h.5M14.5 10h.5" stroke-linecap="round"/></svg>
 </button>
@@ -424,7 +402,6 @@ const I18N = {
     q3:"بعد أسبوعين لاحظت الفرق في نعومة بشرتي. أنصح فيه كل صديقاتي.", q3a:"— لينا، عمّان",
     finalTitle:'أنتِ تستحقين <em>هذه اللحظة</em>', finalP:"خصم 15% على طلبكِ الأول · شحن مجاني عالمياً",
     finalCta:"ابدئي روتينكِ الفاخر", tagline:"عناية فاخرة، لأنكِ تستحقين.", follow:"تابعينا على تيك توك:",
-    translating:"✦ الذكاء الاصطناعي يترجم الصفحة...", anyLang:"أي لغة أخرى...",
     chatTitle:"مساعدة Aurelia الذكية", chatSub:"اسأليني بأي لغة ✦", chatPh:"اكتبي سؤالكِ هنا...",
     chatHello:"أهلاً بكِ في Aurelia ✦ أنا مساعدتكِ الذكية — اسأليني عن المنتجات، الشحن، أو كود الخصم، بأي لغة تحبين."
   },
@@ -450,7 +427,6 @@ const I18N = {
     q3:"After two weeks I noticed the difference in my skin. I recommend it to everyone.", q3a:"— Lina, Amman",
     finalTitle:'You deserve <em>this moment</em>', finalP:"15% off your first order · Free worldwide shipping",
     finalCta:"Begin Your Luxury Ritual", tagline:"Luxury care, because you deserve it.", follow:"Follow us on TikTok:",
-    translating:"✦ AI is translating the page...", anyLang:"Any other language...",
     chatTitle:"Aurelia AI Assistant", chatSub:"Ask me in any language ✦", chatPh:"Type your question...",
     chatHello:"Welcome to Aurelia ✦ I'm your AI assistant — ask me about products, shipping, or your discount code, in any language."
   }
@@ -472,32 +448,12 @@ const langBtn=document.getElementById("langBtn"), langMenu=document.getElementBy
 langBtn.addEventListener("click",()=>{ langMenu.classList.toggle("open"); langBtn.setAttribute("aria-expanded",langMenu.classList.contains("open")); });
 document.addEventListener("click",e=>{ if(!e.target.closest(".lang-wrap")) langMenu.classList.remove("open"); });
 langMenu.querySelectorAll("[data-lang]").forEach(b=>b.addEventListener("click",()=>{ applyDict(I18N[b.dataset.lang], I18N[b.dataset.lang]._dir); langMenu.classList.remove("open"); }));
-langMenu.querySelectorAll("[data-ai]").forEach(b=>b.addEventListener("click",()=>{ aiTranslate(b.dataset.ai); langMenu.classList.remove("open"); }));
-document.getElementById("customLangGo").addEventListener("click",()=>{ const v=document.getElementById("customLang").value.trim(); if(v){ aiTranslate(v); langMenu.classList.remove("open"); } });
 
 const CLAUDE_ENDPOINT = "/.netlify/functions/claude"; // if embedding on Shopify, use the full URL: "https://YOUR-SITE.netlify.app/.netlify/functions/claude"
 async function claudeCall(messages, maxTokens=1500){
   const r = await fetch(CLAUDE_ENDPOINT,{ method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({max_tokens:maxTokens, messages}) });
   const data = await r.json();
   return (data.content||[]).filter(i=>i.type==="text").map(i=>i.text).join("\n");
-}
-
-const aiCache = {};
-async function aiTranslate(lang){
-  const key = lang.toLowerCase();
-  if(aiCache[key]){ applyDict(aiCache[key], aiCache[key]._dir); return; }
-  const ov=document.getElementById("translating"); ov.classList.add("show");
-  try{
-    const src={...I18N.en}; delete src._dir; delete src._label;
-    const prompt=`You are a professional localizer for "Aurelia", a luxury beauty e-commerce brand (elegant, warm, addressing women). Translate the JSON values below into ${lang}. Keep HTML tags (<b>, <em>, <br>) exactly as-is. Keep "WELCOME15" and "Aurelia" untranslated. Respond ONLY with valid JSON, same keys, no markdown fences, no preamble. Also add two extra keys: "_dir" = "rtl" if ${lang} is written right-to-left else "ltr", and "_label" = the native name of the language.\n\n${JSON.stringify(src)}`;
-    const raw=await claudeCall([{role:"user",content:prompt}],3000);
-    const dict=JSON.parse(raw.replace(/```json|```/g,"").trim());
-    aiCache[key]=dict;
-    applyDict(dict, dict._dir==="rtl"?"rtl":"ltr");
-  }catch(err){
-    console.error(err);
-    alert(currentDict._dir==="rtl"?"تعذرت الترجمة، حاول مرة أخرى":"Translation failed, please try again");
-  }finally{ ov.classList.remove("show"); }
 }
 
 // The assistant's system prompt now lives server-side in the Netlify function.

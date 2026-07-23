@@ -393,7 +393,7 @@ footer.site a{color:var(--rose)}
   </div>
   <div class="chat-body" id="chatBody"></div>
   <div class="chat-input">
-    <input id="chatText" data-i18n-ph="chatPh" placeholder="اكتبي سؤالكِ هنا...">
+    <input id="chatText" maxlength="500" data-i18n-ph="chatPh" placeholder="اكتبي سؤالكِ هنا...">
     <button class="chat-send" id="chatSend" aria-label="Send">
       <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" stroke-linecap="round" stroke-linejoin="round"/></svg>
     </button>
@@ -500,10 +500,7 @@ async function aiTranslate(lang){
   }finally{ ov.classList.remove("show"); }
 }
 
-const SYSTEM_CTX=`You are the friendly AI customer assistant for "Aurelia" (aurelia.beauty.co on TikTok), a luxury beauty & personal care online store with a black-and-gold aesthetic.
-Facts: Free worldwide shipping. 15% off first order with code WELCOME15. Hero product: LED face mask (clinic-grade light therapy at home); also premium self-care tools like scalp massagers. Secure checkout via Shopify Payments. Store reachable via the shop buttons on this page / link in bio.
-Rules: ALWAYS reply in the customer's language. Tone: warm, elegant, helpful; in Arabic use feminine "أنتِ". Never make medical claims. For order status/refunds, kindly direct them to TikTok DM. Keep answers 2-4 sentences.`;
-
+// The assistant's system prompt now lives server-side in the Netlify function.
 const chatFab=document.getElementById("chatFab"), chatPanel=document.getElementById("chatPanel"),
       chatBody=document.getElementById("chatBody"), chatText=document.getElementById("chatText"),
       chatSend=document.getElementById("chatSend");
@@ -519,7 +516,7 @@ async function sendChat(){
   history.push({role:"user",content:t});
   const typing=addMsg(currentDict._dir==="rtl"?"تكتب...":"typing...","bot typing");
   try{
-    const reply=await claudeCall([{role:"user",content:SYSTEM_CTX+"\n\nConversation so far:\n"+history.map(h=>`${h.role}: ${h.content}`).join("\n")+"\n\nReply to the customer's last message now."}],600);
+    const reply=await claudeCall(history.slice(-10),600);
     typing.remove(); addMsg(reply.replace(/</g,"&lt;"),"bot");
     history.push({role:"assistant",content:reply});
     if(history.length>12) history.splice(0,history.length-12);
